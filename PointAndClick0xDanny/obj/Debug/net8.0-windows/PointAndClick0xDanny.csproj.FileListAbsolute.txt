@@ -1,0 +1,17 @@
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\bin\Debug\net8.0-windows\PointAndClick0xDanny.exe
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\bin\Debug\net8.0-windows\PointAndClick0xDanny.deps.json
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\bin\Debug\net8.0-windows\PointAndClick0xDanny.runtimeconfig.json
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\bin\Debug\net8.0-windows\PointAndClick0xDanny.dll
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\bin\Debug\net8.0-windows\PointAndClick0xDanny.pdb
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.LeaderBoardForm.resources
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.MainForm.resources
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.csproj.GenerateResource.cache
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.AssemblyInfoInputs.cache
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.AssemblyInfo.cs
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.csproj.CoreCompileInputs.cache
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.dll
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\refint\PointAndClick0xDanny.dll
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.pdb
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\PointAndClick0xDanny.genruntimeconfig.cache
+C:\Users\Danny\source\repos\PointAndClick0xDanny\PointAndClick0xDanny\obj\Debug\net8.0-windows\ref\PointAndClick0xDanny.dll
