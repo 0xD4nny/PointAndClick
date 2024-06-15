@@ -12,7 +12,6 @@ namespace PointAndClick0xDanny
 
         public Color EdgeColor;
         public Color HoverColor;
-        public Color PressedColor;
 
         public int EdgeSize = 1;
         public int ArcLength = 10;
@@ -25,30 +24,13 @@ namespace PointAndClick0xDanny
             FlatAppearance.MouseOverBackColor = Color.Transparent;
             FlatAppearance.MouseDownBackColor = Color.Transparent;
 
-            MouseEnter += new EventHandler(RoundButton_MouseEnter);
-            MouseLeave += new EventHandler(RoundButton_MouseLeave);
-            MouseDown += new MouseEventHandler(RoundButton_MouseDown);
-            MouseUp += new MouseEventHandler(RoundButton_MouseUp);
+            MouseEnter += new EventHandler(RoundButton_MouseEnter!);
+            MouseLeave += new EventHandler(RoundButton_MouseLeave!);
+            MouseDown += new MouseEventHandler(RoundButton_MouseDown!);
+            MouseUp += new MouseEventHandler(RoundButton_MouseUp!);
         }
 
         protected override bool ShowFocusCues => false;
-
-        protected override void OnGotFocus(EventArgs e)
-        {
-        }
-
-        protected override void OnKeyDown(KeyEventArgs e)
-        {
-        }
-
-        protected override void OnKeyUp(KeyEventArgs e)
-        {
-        }
-
-        protected override void OnKeyPress(KeyPressEventArgs e)
-        {
-
-        }
 
         private void RoundButton_MouseEnter(object sender, EventArgs e)
         {
@@ -76,6 +58,9 @@ namespace PointAndClick0xDanny
 
         protected override void OnMouseClick(MouseEventArgs e)
         {
+            if (path is null)
+                throw new NullReferenceException(nameof(path));
+
             if (path.IsVisible(e.Location))
                 base.OnMouseClick(e);
         }
@@ -90,14 +75,14 @@ namespace PointAndClick0xDanny
             using (Pen myPen = new Pen(EdgeColor, EdgeSize))
             {
                 if (path is null)
-                    throw new Exception("path can't be null.");
+                    throw new NullReferenceException(nameof(path));
 
                 e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
 
                 Color buttonColor = BackColor;
-                if (isHovered|| Focused)
+                if (isHovered)
                     buttonColor = EdgeColor;
-                else if (isPressed)
+                if (isPressed)
                     buttonColor = Color.FromArgb(EdgeColor.R / 2, EdgeColor.G / 2, EdgeColor.B / 2);
 
                 if (isHovered || isPressed)
