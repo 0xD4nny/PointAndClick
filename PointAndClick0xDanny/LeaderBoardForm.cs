@@ -9,6 +9,7 @@ namespace PointAndClick0xDanny
         private readonly RoundButton button1, button2;
         private readonly GraphicsPath _leaderboardGuiEdgePath;
         private readonly Pen _myPen = new Pen(Color.Black, 2);
+
         public LeaderBoardForm(List<Entry> entries)
         {
             InitializeComponent();
@@ -45,8 +46,8 @@ namespace PointAndClick0xDanny
             Controls.Add(button1);
             Controls.Add(button2);
 
-            Region = new Region(MainForm.GetRectWithRoundCornor(0, 0, Width, Height, 52));
-            _leaderboardGuiEdgePath = MainForm.GetRectWithRoundCornor(1, 1, Width - 1, Height - 1, 50);
+            Region = new Region(MainForm.GetRectWithRoundCornor(0, 0, Width, Height, 52)); // Adds nice round corners to the form.
+            _leaderboardGuiEdgePath = MainForm.GetRectWithRoundCornor(1, 1, Width - 1, Height - 1, 50); // its for the black edge, to let it look more clean.
         }
 
         protected override void OnPaint(PaintEventArgs e)
@@ -54,20 +55,19 @@ namespace PointAndClick0xDanny
             base.OnPaint(e);
             e.Graphics.SmoothingMode = SmoothingMode.HighQuality;
             e.Graphics.PixelOffsetMode = PixelOffsetMode.HighQuality;
-
             e.Graphics.DrawPath(_myPen, _leaderboardGuiEdgePath);
         }
 
         private void InitializeListView()
         {
             listView1.View = View.Details;
-            listView1.Columns.Add("Player Name");
-            listView1.Columns.Add("Score", -2, HorizontalAlignment.Right);
-            listView1.Columns.Add("Miss Hits", -2, HorizontalAlignment.Right);
-            listView1.Columns.Add("Accuracy", -2, HorizontalAlignment.Right);
-            listView1.Columns.Add("Level", -2, HorizontalAlignment.Right);
-            listView1.Columns.Add("Game Time", -2, HorizontalAlignment.Right);
-            listView1.Columns.Add("Entry Date", -2, HorizontalAlignment.Right);
+            listView1.Columns.Add("Player Name",-2, HorizontalAlignment.Center);
+            listView1.Columns.Add("Score", -2, HorizontalAlignment.Center);
+            listView1.Columns.Add("Level", -2, HorizontalAlignment.Center);
+            listView1.Columns.Add("Game Time", -2, HorizontalAlignment.Center);
+            listView1.Columns.Add("Miss Hits", -2, HorizontalAlignment.Center);
+            listView1.Columns.Add("Accuracy", -2, HorizontalAlignment.Center);
+            listView1.Columns.Add("Entry Date", -2, HorizontalAlignment.Left);
         }
 
         private void PopulateListView(List<Entry> entries)
@@ -93,7 +93,7 @@ namespace PointAndClick0xDanny
         public static void AddEntry(Entry newEntry)
         {
             if (newEntry is null)
-                throw new Exception("the Leaderboard entry can't be null.");
+                throw new ArgumentNullException(nameof(newEntry));
 
             using (FileStream stream = File.Open(_path, FileMode.OpenOrCreate, FileAccess.ReadWrite))
             {
@@ -126,21 +126,25 @@ namespace PointAndClick0xDanny
 
             using (FileStream stream = File.Open(_path, FileMode.Open, FileAccess.Read))
             {
-                XDocument XML = XDocument.Load(stream);
+                XDocument? XML = XDocument.Load(stream);
+
                 if (XML is null)
-                    throw new Exception("Missing leaderboard.xml file.");
+                    throw new NullReferenceException(nameof(XML));
 
-                List<Entry> entries = XML.Descendants("Entry")
+                List<Entry>? entries = XML.Descendants("Entry")
                     .Select(entry => new Entry(
-                    int.Parse(entry.Element("Score").Value),
-                    int.Parse(entry.Element("MissHits").Value),
-                    int.Parse(entry.Element("Accuracy").Value),
-                    int.Parse(entry.Element("Level").Value),
-                    int.Parse(entry.Element("GameTime").Value),
-                    entry.Element("PlayerName").Value,
-                    DateTime.Parse(entry.Element("EntryCreateTime").Value)))
-                    .OrderByDescending(e => e.Score).ToList();
+                    int.Parse(entry.Element("Score")!.Value),
+                    int.Parse(entry.Element("MissHits")!.Value),
+                    int.Parse(entry.Element("Accuracy")!.Value),
+                    int.Parse(entry.Element("Level")!.Value),
+                    int.Parse(entry.Element("GameTime")!.Value),
+                    entry.Element("PlayerName")!.Value,
+                    DateTime.Parse(entry.Element("EntryCreateTime")!.Value)))?
+                    .OrderByDescending(e => e.Score)?.ToList();
 
+                if (entries is null)
+                    throw new NullReferenceException(nameof(entries));
+                
                 return entries;
             }
         }

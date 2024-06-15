@@ -16,13 +16,14 @@ namespace PointAndClick0xDanny
         private int _timeToLevelUp = 15;
         private int _level = 1;
         private int _life = 3;
-        private int _gameTime, _fps, _score, _missHits, _accuracy;
+        private int _gameTime, _score, _missHits;
+        private bool _restartGame, _continueGame;
 
         private readonly Pen _myPen = new Pen(Color.Black, 2);
         private readonly Rectangle _gameField;
 
         private GraphicsPath _guiEdgePath = new GraphicsPath();
-        private readonly Rectangle _closeButton, _breakIcon;
+        private readonly Rectangle _closeButton, _breakButton;
 
         public MainForm()
         {
@@ -34,7 +35,7 @@ namespace PointAndClick0xDanny
             Region = new Region(GetRectWithRoundCornor(0, 0, ClientSize.Width, ClientSize.Height, 52));
             _gameField = new Rectangle(160, 60, Width - 200, Height - 100);
             _closeButton = new Rectangle(Width - 30, 10, 20, 20);
-            _breakIcon = new Rectangle(Width - 60, 10, 20, 20);
+            _breakButton = new Rectangle(Width - 60, 10, 20, 20);
             _lifes = new List<Rectangle>()
             {
                 new Rectangle(205, 525, 15, 15),
@@ -114,10 +115,12 @@ namespace PointAndClick0xDanny
             if (_gameTime > 180 || _life < 0)
             {
                 _timer.Stop();
+                
                 string playerName = GetUserInputBox();
-                LeaderBoardForm.AddEntry(new Entry(_score, _missHits, _accuracy, _level, _gameTime, playerName, DateTime.Today.ToLocalTime()));
+                LeaderBoardForm.AddEntry(new Entry(_score, _missHits, (int)(_score / (float)(_score + _missHits) * 100f), _level, _gameTime, playerName, DateTime.Today.ToLocalTime()));
                 List<Entry> entrys = LeaderBoardForm.GetLeaderboardData();
                 LeaderBoardForm leaderboardForm = new LeaderBoardForm(entrys);
+                
                 DialogResult result = leaderboardForm.ShowDialog();
                 if (result == DialogResult.OK)
                     Restart();
@@ -138,9 +141,7 @@ namespace PointAndClick0xDanny
         private void GameForm_KeyDown(object? sender, KeyEventArgs e)
         {
             if (e.KeyData == Keys.Escape)
-            {
                 BreakMenu();
-            }
         }
 
         private async void GameForm_MouseClick(object? sender, MouseEventArgs e)
@@ -148,22 +149,29 @@ namespace PointAndClick0xDanny
             for (int i = 0; i < _circles.Count; i++)
                 if (_circles[i].Circle.Contains(e.Location))
                 {
-                    _score++;
-
-                    label3.Text = $"Shut down in {_circles[i].LivingTime.ElapsedMilliseconds}ms";
+                    label3.Text = $"Hit Confirm {_circles[i].LivingTime.ElapsedMilliseconds}ms";
                     label3.Location = new Point(e.Location.X - 60, e.Location.Y - 50);
                     _circles.Remove(_circles[i]);
-
-                    label3.Visible = true;
-                    await Task.Delay(100);
-                    label3.Visible = false;
+                    _score++;
+                    HitConfirm();
                     return;
                 }
-            if (_breakIcon.Contains(e.Location))
+            if (_breakButton.Contains(e.Location))
+            {
+                _continueGame = true;
                 BreakMenu();
-
+            }
             if (_closeButton.Contains(e.Location))
+            {
+                _restartGame= true;
                 Close();
+            }
+            if (_restartGame||_continueGame)
+            {
+                _restartGame = false;
+                _continueGame = false;
+                return;
+            }
 
             _missHits++;
             _life--;
@@ -173,18 +181,12 @@ namespace PointAndClick0xDanny
         {
             _gameTime = (int)_gameStopwatch.ElapsedTicks / 10_000_000;
 
-            _fps = (int)(1 / (_fpsStopwatch.ElapsedTicks / 10_000_000f));
-            _fpsStopwatch.Restart();
-
-            if (_score > 0)
-                _accuracy = (int)(_score / (float)(_score + _missHits) * 100f);
-
             if (_gameTime > _timeToLevelUp)
             {
-
                 _timeToLevelUp += 15;
                 _level++;
                 _life = 3 + _level - 1;
+
                 label4.Visible = true;
                 await Task.Delay(300);
                 label4.Visible = false;
@@ -193,39 +195,22 @@ namespace PointAndClick0xDanny
             label5.Text = $"Time: {_gameTime}";
             label6.Text = $"Level: {_level}";
             label7.Text = $"Score: {_score}";
-            label8.Text = $"FPS: {_fps}";
+            label8.Text = $"FPS: {(int)(1 / (_fpsStopwatch.ElapsedTicks / 10_000_000f))}";
+
+            _fpsStopwatch.Restart();
         }
 
-        private void DrawUI(PaintEventArgs e)
+        private void Restart()
         {
-            e.Graphics.DrawPath(_myPen, _guiEdgePath);
-            e.Graphics.DrawLine(_myPen, 0, 40, Width, 40);
-            e.Graphics.DrawLine(_myPen, 140, 40, 140, Height);
-            e.Graphics.DrawRectangle(_myPen, _gameField);
-            e.Graphics.FillRectangle(Brushes.Black, _gameField);
-            e.Graphics.DrawEllipse(_myPen, _closeButton);
-            e.Graphics.DrawLine(_myPen, _closeButton.Location.X + 4, _closeButton.Location.Y + 4, _closeButton.Location.X + 16, _closeButton.Location.Y + 16);
-            e.Graphics.DrawLine(_myPen, _closeButton.Location.X + 16, _closeButton.Location.Y + 4, _closeButton.Location.X + 4, _closeButton.Location.Y + 16);
-            e.Graphics.DrawEllipse(_myPen, _breakIcon);
-            e.Graphics.DrawLine(_myPen, _breakIcon.Location.X + 16, _breakIcon.Location.Y + 4, _breakIcon.Location.X + 4, _breakIcon.Location.Y + 16);
-        }
-
-        private void DrawGlow(Graphics g, RectangleF rect, Color color, int glowSize)
-        {
-            using (GraphicsPath path = new GraphicsPath())
-            {
-                path.AddEllipse(rect.Location.X - 2, rect.Location.Y - 2, rect.Width + 4, rect.Height + 4);
-
-                for (int i = 1; i <= glowSize; i++)
-                {
-                    int alpha = (int)(32 * (1 - (float)i / glowSize));
-                    using (Pen pen = new Pen(Color.FromArgb(alpha, color), i * 2))
-                    {
-                        pen.LineJoin = LineJoin.Round;
-                        g.DrawPath(pen, path);
-                    }
-                }
-            }
+            _gameTime = 0;
+            _timeToLevelUp = 15;
+            _level = 1;
+            _life = 3;
+            _score = 0;
+            _missHits = 0;
+            _circles.Clear();
+            _gameStopwatch.Restart();
+            _timer.Start();
         }
 
         private string GetUserInputBox()
@@ -261,7 +246,6 @@ namespace PointAndClick0xDanny
                 return textBox.Text;
             }
         }
-
 
         private void BreakMenu()
         {
@@ -319,18 +303,43 @@ namespace PointAndClick0xDanny
             }
         }
 
-        private void Restart()
+        private async Task HitConfirm()
         {
-            _gameTime = 0;
-            _timeToLevelUp = 15;
-            _level = 1;
-            _life = 3;
-            _score = 0;
-            _missHits = 0;
-            _accuracy = 0;
-            _circles.Clear();
-            _gameStopwatch.Restart();
-            _timer.Start();
+            label3.Visible = true;
+            await Task.Delay(300);
+            label3.Visible = false;
+        }
+
+        private void DrawUI(PaintEventArgs e)
+        {
+            e.Graphics.DrawPath(_myPen, _guiEdgePath);
+            e.Graphics.DrawLine(_myPen, 0, 40, Width, 40);
+            e.Graphics.DrawLine(_myPen, 140, 40, 140, Height);
+            e.Graphics.DrawRectangle(_myPen, _gameField);
+            e.Graphics.FillRectangle(Brushes.Black, _gameField);
+            e.Graphics.DrawEllipse(_myPen, _closeButton);
+            e.Graphics.DrawLine(_myPen, _closeButton.Location.X + 4, _closeButton.Location.Y + 4, _closeButton.Location.X + 16, _closeButton.Location.Y + 16);
+            e.Graphics.DrawLine(_myPen, _closeButton.Location.X + 16, _closeButton.Location.Y + 4, _closeButton.Location.X + 4, _closeButton.Location.Y + 16);
+            e.Graphics.DrawEllipse(_myPen, _breakButton);
+            e.Graphics.DrawLine(_myPen, _breakButton.Location.X + 16, _breakButton.Location.Y + 4, _breakButton.Location.X + 4, _breakButton.Location.Y + 16);
+        }
+
+        private void DrawGlow(Graphics g, RectangleF rect, Color color, int glowSize)
+        {
+            using (GraphicsPath path = new GraphicsPath())
+            {
+                path.AddEllipse(rect.Location.X - 2, rect.Location.Y - 2, rect.Width + 4, rect.Height + 4);
+
+                for (int i = 1; i <= glowSize; i++)
+                {
+                    int alpha = (int)(32 * (1 - (float)i / glowSize));
+                    using (Pen pen = new Pen(Color.FromArgb(alpha, color), i * 2))
+                    {
+                        pen.LineJoin = LineJoin.Round;
+                        g.DrawPath(pen, path);
+                    }
+                }
+            }
         }
 
         public static GraphicsPath GetRectWithRoundCornor(int x, int y, int width, int height, int radius)

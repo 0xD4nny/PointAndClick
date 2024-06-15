@@ -6,12 +6,11 @@ namespace PointAndClick0xDanny
     {
         public Stopwatch LivingTime = new Stopwatch();
 
-        private float _x = -0.5f, _y = -0.5f, _h = 1f, _w = 1f;
+        public readonly Color PrimaryColor, SecondaryColor;
 
         public RectangleF Circle;
 
-        public readonly Color PrimaryColor;
-        public readonly Color SecondaryColor;
+        private float _x = -0.5f, _y = -0.5f, _h = 1f, _w = 1f;
 
         public MyCircle(Rectangle gamefield, Random random)
         {
@@ -42,6 +41,7 @@ namespace PointAndClick0xDanny
             Circle.Height += _h;
             Circle.X += _x;
             Circle.Y += _y;
+
         }
 
     }
